@@ -35,7 +35,7 @@ dependencies {
 }
 processResources {
     inputs.properties 'version': version, 'group': project.group
-
+    duplicatesStrategy(DuplicatesStrategy.INCLUDE)
     filesMatching('quilt.mod.json') {
         expand 'version': version, 'group': project.group
     }
@@ -67,6 +67,18 @@ jar {
         rename { "${it}_${base.archivesName.get()}" }
     }
 }
+sourceSets {
+    main {
+        resources {
+            srcDir("src/generated/resources")
+            exclude("src/generated/resources/.cache")
+        }
+    }
+}
+
+fabricApi {
+    configureDataGeneration()
+}
 loom {
     // Loom and Loader both use this block in order to gather more information about your mod.
     mods {
@@ -77,6 +89,16 @@ loom {
             // If you shade (directly include classes, not JiJ) a dependency into your mod, include it here using one of these methods:
             // dependency("com.example.shadowedmod:1.2.3")
             // configuration("exampleShadedConfigurationName")
+        }
+    }
+    runs {
+        datagen {
+            client()
+
+            name "Data Generation"
+            vmArg "-Dfabric-api.datagen"
+            vmArg "-Dfabric-api.datagen.output-dir=${file("src/generated/resources")}"
+            vmArg "-Dfabric-api.datagen.modid=ansquaregistration"
         }
     }
 }

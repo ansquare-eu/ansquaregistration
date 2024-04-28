@@ -19,7 +19,9 @@
     },
     "intermediate_mappings": "net.fabricmc:intermediary",
     "entrypoints": {
-      "init": "eu.ansquare.ansquaregistration.Ansquaregistration"
+      "init": "eu.ansquare.ansquaregistration.testinits.Ansquaregistration",
+      "client_init": "eu.ansquare.ansquaregistration.testinits.Ansquareclient",
+      "fabric-datagen": "eu.ansquare.ansquaregistration.testinits.Ansquaredatagen"
     },
     "depends": [
       {
