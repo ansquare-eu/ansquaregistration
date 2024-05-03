@@ -10,8 +10,11 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.tag.TagKey;
 import org.quiltmc.qsl.item.setting.api.QuiltItemSettings;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
 
 public class ItemEntry<T extends Item> extends Entry<T> implements ItemConvertible {
@@ -20,6 +23,7 @@ public class ItemEntry<T extends Item> extends Entry<T> implements ItemConvertib
     private Model itemModel = Models.SINGLE_LAYER_ITEM;
     private Function<QuiltItemSettings, T> factory;
     private String defaultTranslation = "";
+    private Set<TagKey<Item>> tags = new HashSet<>();
     public ItemEntry(String id, Function<QuiltItemSettings, T> factory) {
         super(Registries.ITEM, id);
         this.factory = factory;
@@ -38,6 +42,10 @@ public class ItemEntry<T extends Item> extends Entry<T> implements ItemConvertib
     }
     public ItemEntry<T> model(Model model){
         this.itemModel = model;
+        return this;
+    }
+    public ItemEntry<T> tag(TagKey<Item> tag){
+        tags.add(tag);
         return this;
     }
     public ItemEntry<T> noModel(){

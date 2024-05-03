@@ -1,5 +1,6 @@
 package eu.ansquare.ansquaregistration;
 
+import eu.ansquare.ansquaregistration.datagen.BlockLootGen;
 import eu.ansquare.ansquaregistration.datagen.DefaultLangGen;
 import eu.ansquare.ansquaregistration.datagen.ModelGen;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
@@ -26,6 +27,7 @@ public class Rg {
         FabricDataGenerator.Pack pack = generator.createPack();
         pack.addProvider((FabricDataGenerator.Pack.Factory<ModelGen>) output -> new ModelGen(output, this));
         pack.addProvider((FabricDataGenerator.Pack.Factory<DefaultLangGen>) output -> new DefaultLangGen(output, this));
+        pack.addProvider((FabricDataGenerator.Pack.Factory<BlockLootGen>) output -> new BlockLootGen(output, this));
     }
     private String id;
     private Set<Entry<?>> entries;

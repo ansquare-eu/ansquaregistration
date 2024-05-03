@@ -1,5 +1,6 @@
 package eu.ansquare.ansquaregistration;
 
+import eu.ansquare.ansquaregistration.datagen.BlockLootGen;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.block.Block;
 import net.minecraft.client.render.RenderLayer;
@@ -9,6 +10,7 @@ import net.minecraft.data.client.model.BlockStateSupplier;
 import net.minecraft.data.client.model.Model;
 import net.minecraft.data.client.model.Models;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
@@ -17,6 +19,7 @@ import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 import org.quiltmc.qsl.block.extensions.api.client.BlockRenderLayerMap;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class BlockEntry<T extends Block> extends Entry<T> {
@@ -26,6 +29,7 @@ public class BlockEntry<T extends Block> extends Entry<T> {
     private ItemEntry<? extends BlockItem> blockItem = null;
     private RenderLayer renderLayer;
     private BiConsumer<BlockEntry<? extends Block>, BlockStateModelGenerator> blockModelGenerator = ((blockEntry, generator) -> generator.registerSimpleCubeAll(blockEntry.get()));
+    private BiConsumer<BlockEntry<? extends Block>, BlockLootGen> lootGen = (blockEntry, blockLootGen) -> {};
     public BlockEntry(String id, Function<QuiltBlockSettings, T> factory) {
         super(Registries.BLOCK, id);
         this.factory = factory;
@@ -42,6 +46,16 @@ public class BlockEntry<T extends Block> extends Entry<T> {
         this.renderLayer = layer;
         return this;
     }
+    public BlockEntry<T> loot(BiConsumer<BlockEntry<? extends Block>, BlockLootGen> consumer){
+        lootGen = lootGen.andThen(consumer);
+        return this;
+    }
+    public BlockEntry<T> drops(ItemConvertible item){
+        return loot(((blockEntry, blockLootGen) -> blockLootGen.addDrop(blockEntry.get(), item)));
+    }
+    public BlockEntry<T> dropsSelf(){
+        return drops(getItem());
+    }
     public BlockEntry<T> model(BiConsumer<BlockEntry<? extends Block>, BlockStateModelGenerator> blockModelGenerator){
         this.blockModelGenerator = blockModelGenerator;
         return this;
@@ -55,7 +69,9 @@ public class BlockEntry<T extends Block> extends Entry<T> {
         blockModelGenerator.accept(this, generator);
         return true;
     }
-
+    public void generateLoot(BlockLootGen gen){
+        lootGen.accept(this, gen);
+    }
     @Override
     protected void build() {
         if(settings == null) settings =QuiltBlockSettings.create();
